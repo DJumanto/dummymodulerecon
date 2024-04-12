@@ -5,10 +5,9 @@
 - Reconnaissance and Digital Footprinting tools
 - How to use NMAP as Service scanner
 - How to use Rustscan as Port scanner
-- Hot to use Gobuster as active directory scanning
+- Hot to use Gobuster as directory scanner
 - How to verify service vulnerability using NMAP script
-- Introduction to WebKiller
-- Introduction to WafWuf
+- Subdomain enumeration using subfinder
 
 ## Mohon Dibaca Sebelum Lanjut
 
@@ -32,9 +31,8 @@ Berikut merupakan tools yang umum digunakan oleh web penetration tester untuk me
 |----|----------|-----------|
 |![nmap](https://nmap.org/images/sitelogo-2x.png) | NMAP | Tools powerful yang dapat digunakan untuk port dan service scanning. Output hasil scanning cukup lengkap, dilengkapi dengan NSE script yang mempermudah untuk validasi vulnerability (dibahas lebih lanjut di bawah)     | 
 |![rustscan](https://repository-images.githubusercontent.com/278933035/8389af00-ebe8-11ea-8c69-439b2883097a) | Rustscan    | Tools port scanning mirip nmap, tetapi berfokus pada port scanning. jauh lebih cepat dari nmap karena didukung oleh teknologi dari rust. Hasil dapat langsung di-pipe ke nmap, yang dapat digunakan untuk analisis lebih lanjut |
-|![Gobuster](https://www.kali.org/tools/gobuster/images/gobuster-logo.svg)| Gobuster     | Directory scanner, tools yang common digunakan untuk mencari active directory sehingga scope analisis bisa lebih luas dan mempermudah mencari titik lemah pada aplikasi website |
-|![WafW00f](https://miro.medium.com/v2/resize:fit:1400/1*X8NcJM997CvbbjfcelFD7Q.png)| WafW00f      | The Web Application Firewall Fingerprinting Toolkit. Toolkit yang sangat berguna untuk mendeteksi firewall firewall yang ada. Sehingga bisa lebih menghemat waktu dalam proses pentesting. |
-|![WebKiller](https://media.geeksforgeeks.org/wp-content/uploads/20210705190259/20.PNG) | WebKiller     | Webkiller merupakan tools multifungsi yang bisa digunakan untuk Bypass Cloud Flare, Cms Detect, Trace Toute, Reverse IP, Port Scan, IP location Finder, Show HTTP Header, Find Shared DNS, Whois, DNS Lookup, Robots Scanner, Admin Page Finder, plugin detection, dan username guessing. Untuk sementara hanya mendukung wordpress untuk cms scanning.|
+|![Gobuster](https://www.kali.org/tools/gobuster/images/gobuster-logo.svg)| Gobuster     | Directory scanner, tools yang common digunakan untuk mencari directory sehingga scope analisis bisa lebih luas dan mempermudah mencari titik lemah pada aplikasi website |
+|![Subfinder](https://cdn.cyberpunk.rs/wp-content/uploads/2020/04/subfinder_bg.jpg)| Subfinder     | Open Source tool yang digunakan untuk melakukan subdomain finding pada sebuah domain utama |
 
 ## How to use NMAP as Service scanner
 
@@ -228,9 +226,9 @@ rustscan -a 127.0.0.1 -r 1-20 -- -A -sC -sV -oN initials
 # Port yang discan adalah 1-20. Lalu lakukan port service checking menggunakan command -A -sC -sV -oN (-- merupakan separator untuk meng-pipe hasil scan ke nmap command)
 ```
 
-## How to use Gobuster as active directory scanning
+## How to use Gobuster as directory scanner
 
-Gobuster merupakan tools yang berguna untuk scanning active directory yang terdapat pada suatu web application. Menemukan active directory pada suatu aplikasi web membuat tester memiliki jangkauan yang lebih luas untuk menganalisis kelemahan yang terdapat pada suatu web. Sederhananya, semakin besar fungsionalitas, semakin potensial sekumpulan developer melakukan kesalahan implementasi logic atau konfigutasi.
+Gobuster merupakan tools yang berguna untuk scanning directory yang terdapat pada suatu web application. Menemukan directory pada suatu aplikasi web membuat tester memiliki jangkauan yang lebih luas untuk menganalisis kelemahan yang terdapat pada suatu web. Sederhananya, semakin besar fungsionalitas, semakin potensial sekumpulan developer melakukan kesalahan implementasi logic atau konfigutasi.
 
 ### Installation
 ```sh
@@ -242,7 +240,7 @@ sudo apt install gobuster -y
 gobuster [command]
 ```
 
-Selain untuk active directory scanning, gobuster juga memiliki kemampuan untuk scanning subdomain pada suatu domain, berikut adalah list dari kemampuan scanning dari gobuster:
+Selain untuk directory scanner, gobuster juga memiliki kemampuan untuk scanning subdomain pada suatu domain, berikut adalah list dari kemampuan scanning dari gobuster:
 
 ```txt
 Available Commands:
@@ -339,16 +337,16 @@ Untuk wordlists kalian bisa mengambil dari repository
 
 Alternatif lain, kalian bisa menggunakan dirbuster sebagai pengganti gobuster. Dirbuster telah menyediaan wordlist dari common, small, sampai ukuran big dengan puluhan ribu possible directory wordlists.
 
-# How to verify service vulnerability using NMAP script
+## How to verify service vulnerability using NMAP script
 
 Anggap kalian telah berhasil menemukan lists of service yang ada pada suatu sistem. Lalu kalian menemukan sumber yang mengatakan bahwa versi dari service yang kalian temukan vulnerable terhadap suatu serangan, tetapi kalian belum bsia memastikan bahwa serangan tersebut benar benar bekerja atau tidak. Disinilah salah satu kemampuan dari NMAP bisa kalian gunakan. please welcome, **NSE Script**
 
 >_**Peringatan**, Sript NSE bagaimanapun juga merupakan tindakan penyerangan terhadap service, jangan gunakan tanpa seizin pemilik layanan_
 
-## NSE Script
+### NSE Script
 Nmap Scripting Engine (NSE) merupakan kumpulan kode bawaan dari NMAP yang berfungsi untuk praktik reconnaissance. Berguna dari sekedar validasi kelemahan, hingga otomasi serangan. Penggunaan dari NSE script bisa mempermudah kalian untuk memverifikasi apakah suatu service benar-benar memiliki celah atau tidak.
 
-## Scripts type available
+### Scripts type available
 - **safe**: Tidak akan mempengaruhi target
 - **intrusive**: Kemungkinan besar akan mempengaruhi target
 - **vuln**: Memindai kerentanan
@@ -361,7 +359,7 @@ Nmap Scripting Engine (NSE) merupakan kumpulan kode bawaan dari NMAP yang berfun
 Untuk informasi lebih lengkap mengenai jenis script, kalian bisa mengunjungi website dari [NMAP](https://nmap.org/book/nse-usage.html)
 
 
-## Basic usage
+### Basic usage
 ```sh
 nmap {URL} -p 80 --script {Script apa yang ingin digunakan} --script-args {Argument dari script}
 ```
@@ -372,7 +370,7 @@ Contoh penggunaan NSE script dengan argument:
 nmap {URL} -p 80 --script http-put --script-args http-put.url='/dav/shell.php',http-put.file='./shell.php'
 ```
 
-## Script Searching
+### Script Searching
 Karena script dari NSE sangatlah banyak, kalian bisa mencari kumpulan script dari nmap pada directory ``/usr/share/nmap/scripts/script.db``
 
 Untuk teknik mencari script secara spesifik, kalian bisa menggunakan kombinasi **cat** dan **grep**:
@@ -417,83 +415,60 @@ Host script results:
 |_      https://blogs.technet.microsoft.com/msrc/2017/05/12/customer-guidance-for-wannacrypt-attacks/
 ```
 
-# Introduction to WebKiller
+## Subdomain enumeration using subfinder
 
-![WebKiller](https://media.geeksforgeeks.org/wp-content/uploads/20210705190259/20.PNG)
+Subfinder merupakan tools yang umum digunakan oleh pentester untuk melakukan subdomain finding. subfinder terkenal lebih cepat dan lebih otomatis untuk melakukan subdomain finding daripada gobuster. Penggunaanya juga cukup mudah, sehingga mempercepat proses recon.
 
-Webkiller merupakan interactive tools yang dapat kalian gunakan untuk melakukan reconnaissance. Tools ini berguna untuk melakukan:
-
-1. Bypass Cloud Flare
-2. Cms Detect
-3. Trace Toute
-4. Reverse IP
-5. Port Scan
-6. IP Location Finder
-7. Show HTTP Header
-8. Find Shared DNS
-9. Whois
-10. DNS Lookup
-11. Robots Scanner
-12. Admin Page Finder
-
-Kemampuan lain dari webkiller adalah yakni bisa melakukan beberapa scanning pada CMS wordpress, seperti top 1000 plugin dan scan username.
-
-# Introducion to WafW00f
-
-WafW00f merupakan tools untuk melakukan scanning firewall apa yang terdapat di depan sebuah service. Kenapa perlu scanning firewall? terkadang sebuah serangan yang possible terjadi tidak dapat dieksekusi dikarenakan terdapat sebuah dinding di depan service tersebut. sehingga mengetahui firewall apa yang terpasang dan menentukan apakah firewall tersebut dapat dibypass atau tidak akan sangat menghemat waktu kalian dalam melakukan serangan nantinya.
-
-## Basic Usage
+### Basic usage
 ```sh
-wafw00f url1 url2 ... urln [options] {args}
-```
-List options:
-```sh
-Options:
-  -h, --help            show this help message and exit
-  -v, --verbose         Enable verbosity, multiple -v options increase
-                        verbosity
-  -a, --findall         Find all WAFs which match the signatures, do not stop
-                        testing on the first one
-  -r, --noredirect      Do not follow redirections given by 3xx responses
-  -t TEST, --test=TEST  Test for one specific WAF
-  -o OUTPUT, --output=OUTPUT
-                        Write output to csv, json or text file depending on
-                        file extension. For stdout, specify - as filename.
-  -f FORMAT, --format=FORMAT
-                        Force output format to csv, json or text.
-  -i INPUT, --input-file=INPUT
-                        Read targets from a file. Input format can be csv,
-                        json or text. For csv and json, a `url` column name or
-                        element is required.
-  -l, --list            List all WAFs that WAFW00F is able to detect
-  -p PROXY, --proxy=PROXY
-                        Use an HTTP proxy to perform requests, examples:
-                        http://hostname:8080, socks5://hostname:1080,
-                        http://user:pass@hostname:8080
-  -V, --version         Print out the current version of WafW00f and exit.
-  -H HEADERS, --headers=HEADERS
-                        Pass custom headers via a text file to overwrite the
-                        default header set.
+subfinder -d {domain} (options)
 ```
 
-Contoh hasil output:
+contoh:
 ```sh
-wafw00f {SomeURL}.net
+subfinder -d its.ac.id -t 30 -nW -o itssubdomain.log
 
-                   ______
-                  /      \
-                 (  Woof! )
-                  \  ____/                      )
-                  ,,                           ) (_
-             .-. -    _______                 ( |__|
-            ()``; |==|_______)                .)|__|
-            / ('        /|\                  (  |__|
-        (  /  )        / | \                  . |__|
-         \(_)_))      /  |  \                   |__|
-
-                    ~ WAFW00F : v2.2.0 ~
-    The Web Application Firewall Fingerprinting Toolkit
-
-[*] Checking https://{SomeURL}.net
-[+] The site https://{SomeURL}.net is behind Cloudflare (Cloudflare Inc.) WAF.
+# Command ini akan melakukan enumerasi pada seluruh subdomain aktif yang berdomain utama pada its.ac.id dengan thread count sebesar 30 (semakin besar thread count semakin cepat), dan menyimpan hasil output pada itssubdomain.log
 ```
+
+Berikut adalah contoh output dari penggunaan subfinder
+```txt
+└─$ subfinder -d its.ac.id -t 30 -nW -o itssubdomain.log
+
+               __    _____           __
+   _______  __/ /_  / __(_)___  ____/ /__  _____
+  / ___/ / / / __ \/ /_/ / __ \/ __  / _ \/ ___/
+ (__  ) /_/ / /_/ / __/ / / / / /_/ /  __/ /
+/____/\__,_/_.___/_/ /_/_/ /_/\__,_/\___/_/
+
+                projectdiscovery.io
+
+[INF] Current subfinder version v2.6.0 (outdated)
+[INF] Loading provider config from /home/kali/.config/subfinder/provider-config.yaml
+[INF] Enumerating subdomains for its.ac.id
+mail.enviro.its.ac.id
+teras.ee.its.ac.id
+if.its.ac.id
+simkwu.its.ac.id
+sdmo.its.ac.id
+gemastik.its.ac.id
+interior.its.ac.id
+meeting.its.ac.id
+...
+...
+...
+...
+(depecrated soalnya puanjang)
+...
+kinerja.its.ac.id
+hermes.if.its.ac.id
+internship.ee.its.ac.id
+eflacad.its.ac.id
+exp1.its.ac.id
+geofisika.its.ac.id
+halal.its.ac.id
+[INF] Found 271 subdomains for its.ac.id in 34 seconds 787 milliseconds
+```
+
+## End of File
+![power within](https://media.tenor.com/GOlK_RvCvnsAAAAM/the-power.gif)
